@@ -4,6 +4,8 @@ package com.example.coconsult.services;
 
 import com.example.coconsult.entities.Invoice;
 import com.example.coconsult.entities.User;
+
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -28,4 +30,10 @@ public interface InvoiceService {
     Invoice archiveInvoice(String id);
 
     List<Invoice> searchInvoices(String keyword);
+
+    List<Invoice> getInvoicesByBudgetRange(BigDecimal minBudget, BigDecimal maxBudget);
+
+    List<Invoice> getInvoicesByDepenseRange(BigDecimal minDepense, BigDecimal maxDepense);
+
+    BigDecimal calculateTotalGainAnnuelByYear(int year);
 }

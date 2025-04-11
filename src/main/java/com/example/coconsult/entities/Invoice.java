@@ -1,12 +1,21 @@
 package com.example.coconsult.entities;
 
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.List;
 
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 @Document(collection = "invoices")
 public class Invoice {
 
@@ -28,13 +37,18 @@ public class Invoice {
     private LocalDate validationDate;
     private LocalDate archiveDate;
 
+    // Nouveaux attributs
+    private BigDecimal budget; // Budget alloué pour la facture
+    private BigDecimal depense; // Dépense réelle enregistrée
+    private BigDecimal gainAnnuel; // Gain annuel associé (optionnel selon votre logique métier)
+
+    // Nouveaux champs simplifiés (String au lieu d'entités)
+    private String department; // Ex. : "Finance", "IT"
+    private String project;    // Ex. : "Projet Alpha", "Projet Beta"
+
     // Enum pour le statut
     public enum InvoiceStatus {
         NEW, VALIDATED, ARCHIVED, REJECTED
-    }
-
-    // Constructeurs
-    public Invoice() {
     }
 
     public Invoice(String invoiceNumber, String vendorName, BigDecimal amount,
@@ -144,4 +158,6 @@ public class Invoice {
     public void setArchiveDate(LocalDate archiveDate) {
         this.archiveDate = archiveDate;
     }
+
+
 }

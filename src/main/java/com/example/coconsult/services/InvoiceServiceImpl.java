@@ -7,6 +7,7 @@ import com.example.coconsult.entities.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
@@ -37,21 +38,15 @@ public class InvoiceServiceImpl implements InvoiceService {
     @Override
     public Invoice updateInvoice(String id, Invoice invoice) {
         Invoice existingInvoice = getInvoiceById(id);
-
-        // Ne pas permettre de changer le statut via cette méthode
-        Invoice.InvoiceStatus originalStatus = existingInvoice.getStatus();
-
-        // Mise à jour des champs (sauf statut)
         existingInvoice.setInvoiceNumber(invoice.getInvoiceNumber());
         existingInvoice.setVendorName(invoice.getVendorName());
         existingInvoice.setAmount(invoice.getAmount());
         existingInvoice.setInvoiceDate(invoice.getInvoiceDate());
         existingInvoice.setDueDate(invoice.getDueDate());
         existingInvoice.setDescription(invoice.getDescription());
-
-        // Restaurer le statut original
-        existingInvoice.setStatus(originalStatus);
-
+        existingInvoice.setBudget(invoice.getBudget());
+        existingInvoice.setDepense(invoice.getDepense());
+        existingInvoice.setGainAnnuel(invoice.getGainAnnuel());
         return invoiceRepository.save(existingInvoice);
     }
 
@@ -118,5 +113,27 @@ public class InvoiceServiceImpl implements InvoiceService {
     @Override
     public List<Invoice> searchInvoices(String keyword) {
         return invoiceRepository.findByVendorNameContainingIgnoreCase(keyword);
+    }
+
+    @Override
+    public List<Invoice> getInvoicesByBudgetRange(BigDecimal minBudget, BigDecimal maxBudget) {
+        return invoiceRepository.findByBudgetBetween(minBudget, maxBudget);
+    }
+
+    @Override
+    public List<Invoice> getInvoicesByDepenseRange(BigDecimal minDepense, BigDecimal maxDepense) {
+        return invoiceRepository.findByDepenseBetween(minDepense, maxDepense);
+    }
+
+    @Override
+    public BigDecimal calculateTotalGainAnnuelByYear(int year) {
+        List<Invoice> invoices = invoiceRepository.findByInvoiceDateYear(
+                year,
+                year
+        );
+        return invoices.stream()
+                .map(Invoice::getGainAnnuel)
+                .filter(gain -> gain != null)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 }
