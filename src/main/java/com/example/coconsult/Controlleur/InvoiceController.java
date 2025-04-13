@@ -8,12 +8,14 @@ import com.example.coconsult.services.InvoiceService;
 
 import com.example.coconsult.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 
@@ -102,4 +104,25 @@ public class InvoiceController {
     public ResponseEntity<List<Invoice>> searchInvoices(@RequestParam String keyword) {
         return ResponseEntity.ok(invoiceService.searchInvoices(keyword));
     }
+
+    // Filtrer par département
+    @GetMapping("/filter/department")
+    public List<Invoice> findByDepartment(@RequestParam String department) {
+        return invoiceService.findByDepartment(department);
+    }
+
+    // Filtrer par projet
+    @GetMapping("/filter/project")
+    public List<Invoice> findByProject(@RequestParam String project) {
+        return invoiceService.findByProject(project);
+    }
+
+    @GetMapping("/filter/date-range")
+    public List<Invoice> findByInvoiceDateBetween(
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) {
+        return invoiceService.findByInvoiceDateBetween(startDate, endDate);
+    }
+
+
 }

@@ -32,6 +32,10 @@ public class InvoiceServiceImpl implements InvoiceService {
     @Override
     public Invoice createInvoice(Invoice invoice) {
         invoice.setStatus(Invoice.InvoiceStatus.NEW);
+        invoice.setArchiveDate(null);
+        invoice.setRejectionReason(null);
+        invoice.setValidatedBy(null);
+        invoice.setValidationDate(null);
         return invoiceRepository.save(invoice);
     }
 
@@ -116,24 +120,16 @@ public class InvoiceServiceImpl implements InvoiceService {
     }
 
     @Override
-    public List<Invoice> getInvoicesByBudgetRange(BigDecimal minBudget, BigDecimal maxBudget) {
-        return invoiceRepository.findByBudgetBetween(minBudget, maxBudget);
+    public List<Invoice> findByDepartment(String department) {
+        return invoiceRepository.findByDepartment(department);
+    }
+    @Override
+    public List<Invoice> findByProject(String project) {
+        return invoiceRepository.findByProject(project);
+    }
+    @Override
+    public List<Invoice> findByInvoiceDateBetween(LocalDate startDate, LocalDate endDate) {
+        return invoiceRepository.findByInvoiceDateBetween(startDate, endDate);
     }
 
-    @Override
-    public List<Invoice> getInvoicesByDepenseRange(BigDecimal minDepense, BigDecimal maxDepense) {
-        return invoiceRepository.findByDepenseBetween(minDepense, maxDepense);
-    }
-
-    @Override
-    public BigDecimal calculateTotalGainAnnuelByYear(int year) {
-        List<Invoice> invoices = invoiceRepository.findByInvoiceDateYear(
-                year,
-                year
-        );
-        return invoices.stream()
-                .map(Invoice::getGainAnnuel)
-                .filter(gain -> gain != null)
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
-    }
 }

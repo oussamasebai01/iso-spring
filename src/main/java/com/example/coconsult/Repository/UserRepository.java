@@ -3,6 +3,7 @@ package com.example.coconsult.Repository;
 import com.example.coconsult.entities.User;
 import org.springframework.data.mongodb.repository.MongoRepository;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface UserRepository extends MongoRepository<User,String> {
@@ -13,4 +14,6 @@ public interface UserRepository extends MongoRepository<User,String> {
     boolean existsByIdentifiant(String identifiant);
 
     boolean existsByEmail(String email);
+    List<User> findByDepartment(String department);
+
 }

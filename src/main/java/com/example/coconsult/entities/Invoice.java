@@ -37,18 +37,16 @@ public class Invoice {
     private LocalDate validationDate;
     private LocalDate archiveDate;
 
-    // Nouveaux attributs
-    private BigDecimal budget; // Budget alloué pour la facture
-    private BigDecimal depense; // Dépense réelle enregistrée
-    private BigDecimal gainAnnuel; // Gain annuel associé (optionnel selon votre logique métier)
 
-    // Nouveaux champs simplifiés (String au lieu d'entités)
-    private String department; // Ex. : "Finance", "IT"
-    private String project;    // Ex. : "Projet Alpha", "Projet Beta"
+    private BigDecimal budget;
+    private BigDecimal depense;
+    private BigDecimal gainAnnuel;
 
-    // Enum pour le statut
+    private String department;
+    private String project;
+
     public enum InvoiceStatus {
-        NEW, VALIDATED, ARCHIVED, REJECTED
+        NEW, VALIDATED, ARCHIVED, REJECTED ,PENDING
     }
 
     public Invoice(String invoiceNumber, String vendorName, BigDecimal amount,

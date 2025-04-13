@@ -3,6 +3,8 @@ package com.example.coconsult.entities;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
+
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,89 +25,106 @@ public class User {
 
     private String experience;
     private String password;
-
+    private String department; // e.g., IT, HR, Finance
+    private String employmentStatus; // ACTIVE, TERMINATED
+    private LocalDate hireDate;
+    private LocalDate terminationDate;
+    private List<TrainingRecord> trainings = new ArrayList<>(); // Embedded training data
+    private Double performanceScore; // Simple performance metric (0-100)
     private List<String> roles = new ArrayList<>();
 
-    // Constructeurs
-    public User() {
+    // Embedded class for training records
+    public static class TrainingRecord {
+        private String title;
+        private String status; // PLANNED, IN_PROGRESS, COMPLETED
+            private LocalDate completionDate;
+
+        public TrainingRecord() {}
+
+        public TrainingRecord(String title, String status, LocalDate completionDate) {
+            this.title = title;
+            this.status = status;
+            this.completionDate = completionDate;
+        }
+
+        public String getTitle() { return title; }
+        public void setTitle(String title) { this.title = title; }
+
+        public String getStatus() { return status; }
+        public void setStatus(String status) { this.status = status; }
+
+        public LocalDate getCompletionDate() { return completionDate; }
+        public void setCompletionDate(LocalDate completionDate) { this.completionDate = completionDate; }
     }
+
+    // Constructors
+    public User() {}
 
     public User(String identifiant, String nom, String prenom, String email,
-                String experience, String password) {
+                String experience, String password, String department,
+                String employmentStatus, LocalDate hireDate) {
         this.identifiant = identifiant;
         this.nom = nom;
         this.prenom = prenom;
         this.email = email;
         this.experience = experience;
         this.password = password;
+        this.department = department;
+        this.employmentStatus = employmentStatus;
+        this.hireDate = hireDate;
     }
 
-    // Getters et Setters
-    public String getUserId() {
-        return userId;
+    // Getters and Setters
+    public String getUserId() { return userId; }
+    public void setUserId(String userId) { this.userId = userId; }
+
+    public String getIdentifiant() { return identifiant; }
+    public void setIdentifiant(String identifiant) { this.identifiant = identifiant; }
+
+    public String getNom() { return nom; }
+    public void setNom(String nom) { this.nom = nom; }
+
+    public String getPrenom() { return prenom; }
+    public void setPrenom(String prenom) { this.prenom = prenom; }
+
+    public String getEmail() { return email; }
+    public void setEmail(String email) { this.email = email; }
+
+    public String getExperience() { return experience; }
+    public void setExperience(String experience) { this.experience = experience; }
+
+    public String getPassword() { return password; }
+    public void setPassword(String password) { this.password = password; }
+
+    public String getDepartment() { return department; }
+    public void setDepartment(String department) { this.department = department; }
+
+    public String getEmploymentStatus() { return employmentStatus; }
+    public void setEmploymentStatus(String employmentStatus) { this.employmentStatus = employmentStatus; }
+
+    public LocalDate getHireDate() { return hireDate; }
+    public void setHireDate(LocalDate hireDate) { this.hireDate = hireDate; }
+
+    public LocalDate getTerminationDate() { return terminationDate; }
+    public void setTerminationDate(LocalDate terminationDate) { this.terminationDate = terminationDate; }
+
+    public List<TrainingRecord> getTrainings() { return trainings; }
+    public void setTrainings(List<TrainingRecord> trainings) { this.trainings = trainings; }
+
+    public Double getPerformanceScore() { return performanceScore; }
+    public void setPerformanceScore(Double performanceScore) { this.performanceScore = performanceScore; }
+
+    public List<String> getRoles() { return roles; }
+    public void setRoles(List<String> roles) { this.roles = roles; }
+
+    // Helper methods
+    public void addTraining(TrainingRecord training) {
+        if (this.trainings == null) {
+            this.trainings = new ArrayList<>();
+        }
+        this.trainings.add(training);
     }
 
-    public void setUserId(String userId) {
-        this.userId = userId;
-    }
-
-    public String getIdentifiant() {
-        return identifiant;
-    }
-
-    public void setIdentifiant(String identifiant) {
-        this.identifiant = identifiant;
-    }
-
-    public String getNom() {
-        return nom;
-    }
-
-    public void setNom(String nom) {
-        this.nom = nom;
-    }
-
-    public String getPrenom() {
-        return prenom;
-    }
-
-    public void setPrenom(String prenom) {
-        this.prenom = prenom;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public String getExperience() {
-        return experience;
-    }
-
-    public void setExperience(String experience) {
-        this.experience = experience;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public List<String> getRoles() {
-        return roles;
-    }
-
-    public void setRoles(List<String> roles) {
-        this.roles = roles;
-    }
-
-    // Méthode pour ajouter un rôle
     public void addRole(String role) {
         if (this.roles == null) {
             this.roles = new ArrayList<>();
@@ -122,6 +141,9 @@ public class User {
                 ", prenom='" + prenom + '\'' +
                 ", email='" + email + '\'' +
                 ", experience='" + experience + '\'' +
+                ", department='" + department + '\'' +
+                ", employmentStatus='" + employmentStatus + '\'' +
+                ", performanceScore=" + performanceScore +
                 '}';
     }
 }

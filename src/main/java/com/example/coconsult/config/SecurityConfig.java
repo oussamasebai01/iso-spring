@@ -20,46 +20,39 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-                //CSRF (Cross-Site Request Forgery) est une protection contre les attaques
-                // où un site malveillant pourrait soumettre des requêtes à votre application
+                // Désactiver CSRF pour les API
                 .csrf(csrf -> csrf
-                        .ignoringRequestMatchers("/api/**")  // Désactive CSRF pour /api/**
+                        .ignoringRequestMatchers("/api/**")
                 )
-                //Les URLs /api/** sont accessibles à tous, même sans authentification
-                //Les URLs /admin/** nécessitent le rôle "ADMIN"
+                // Autoriser les requêtes sans authentification pour /api/**
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/**").permitAll()  // Autorise /api/** sans authentification
                         .requestMatchers("/admin/**").hasRole("ADMIN")  // Réservé aux admins
                         .anyRequest().authenticated()  // Tout le reste nécessite une authentification
                 )
-                //Utilise /login comme page de connexion (accessible à tous)
-                //Redirige vers /home après une connexion réussie
+                // Configurer la page de connexion
                 .formLogin(form -> form
                         .loginPage("/login")
                         .permitAll()
                         .defaultSuccessUrl("/home")
                 )
-                //Utilise /logout comme URL de déconnexion
-                //Redirige vers /login?logout après déconnexion
+                // Configurer la déconnexion
                 .logout(logout -> logout
                         .logoutUrl("/logout")
                         .logoutSuccessUrl("/login?logout")
                 )
-                //Crée une session seulement si nécessaire
-                //Limite à une seule session active par utilisateur (empêche les connexions multiples)
+                // Gestion des sessions
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
                         .maximumSessions(1)
                 )
-                //Empêche l'application d'être chargée dans un iframe (protection contre le clickjacking)
-                //Active la protection XSS (Cross-Site Scripting) du navigateur
+                // Headers de sécurité
                 .headers(headers -> headers
-                        .frameOptions(frame -> frame.deny())  // Empêche le chargement dans une iframe
-                        .xssProtection(withDefaults())  // Active la protection XSS avec les paramètres par défaut
-                        .cacheControl(withDefaults())  // Désactive le cache
+                        .frameOptions(frame -> frame.deny())
+                        .xssProtection(withDefaults())
+                        .cacheControl(withDefaults())
                 )
-                //Permet à votre API d'être appelée depuis http://localhost:4200 (souvent une application Angular)
-                //Autorise les méthodes GET, POST, PUT et DELETE
+                // Configuration CORS
                 .cors(cors -> cors
                         .configurationSource(request -> {
                             CorsConfiguration config = new CorsConfiguration();
@@ -70,8 +63,7 @@ public class SecurityConfig {
                             return config;
                         })
                 )
-                //Si un utilisateur non authentifié tente d'accéder à une ressource protégée, renvoie une erreur 401 (Unauthorized)
-                //Si un utilisateur authentifié mais sans les droits nécessaires tente d'accéder à une ressource, renvoie une erreur 403 (Forbidden)
+                // Gestion des erreurs d'authentification et d'accès
                 .exceptionHandling(exceptions -> exceptions
                         .authenticationEntryPoint((req, res, ex) -> res.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized"))
                         .accessDeniedHandler((req, res, ex) -> res.sendError(HttpServletResponse.SC_FORBIDDEN, "Forbidden"))

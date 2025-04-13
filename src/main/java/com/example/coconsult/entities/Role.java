@@ -27,25 +27,18 @@ public class Role {
         this.name = name;
     }
 
-    // Méthode pour ajouter un utilisateur au rôle
     public void addUser(User user) {
         if (this.users == null) {
             this.users = new ArrayList<>();
         }
-
         if (!this.users.contains(user)) {
             this.users.add(user);
         }
     }
 
-    // Méthode pour supprimer un utilisateur du rôle
     public void removeUser(User user) {
         if (this.users != null) {
             this.users.remove(user);
         }
-    }
-
-    public String getName() {
-        return name;
     }
 }

@@ -7,6 +7,7 @@ import org.springframework.data.mongodb.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.List;
 
 @Repository
@@ -16,14 +17,14 @@ public interface InvoiceRepository extends MongoRepository<Invoice, String> {
 
     List<Invoice> findByVendorNameContainingIgnoreCase(String vendorName);
 
-    List<Invoice> findByValidatedBy_UserId(String userId);
+    // Filtrer par période (entre deux dates)
+    List<Invoice> findByInvoiceDateBetween(LocalDate startDate, LocalDate endDate);
 
-    List<Invoice> findByInvoiceNumberContainingOrVendorNameContaining(String invoiceNumber, String vendorName);
+    // Filtrer par département
+    List<Invoice> findByDepartment(String department);
 
-    List<Invoice> findByBudgetBetween(BigDecimal minBudget, BigDecimal maxBudget);
+    // Filtrer par projet
+    List<Invoice> findByProject(String project);
 
-    List<Invoice> findByDepenseBetween(BigDecimal minDepense, BigDecimal maxDepense);
 
-    @Query("{'invoiceDate': {$gte: ?0, $lte: ?1}}")
-    List<Invoice> findByInvoiceDateYear(int startYear, int endYear);
 }

@@ -31,9 +31,10 @@ public interface InvoiceService {
 
     List<Invoice> searchInvoices(String keyword);
 
-    List<Invoice> getInvoicesByBudgetRange(BigDecimal minBudget, BigDecimal maxBudget);
+    public List<Invoice> findByDepartment(String department);
+    public List<Invoice> findByProject(String project);
 
-    List<Invoice> getInvoicesByDepenseRange(BigDecimal minDepense, BigDecimal maxDepense);
+    public List<Invoice> findByInvoiceDateBetween(LocalDate startDate, LocalDate endDate);
 
-    BigDecimal calculateTotalGainAnnuelByYear(int year);
+
 }
