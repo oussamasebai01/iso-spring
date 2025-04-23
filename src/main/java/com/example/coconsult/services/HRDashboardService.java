@@ -1,6 +1,8 @@
 package com.example.coconsult.services;
 
+import com.example.coconsult.Repository.DepartmentRepository;
 import com.example.coconsult.Repository.UserRepository;
+import com.example.coconsult.entities.Department;
 import com.example.coconsult.entities.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -17,6 +19,9 @@ public class HRDashboardService {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    DepartmentRepository departmentRepository;
+
 
     // Generate dashboard data
     public Map<String, Object> getDashboardData(LocalDate startDate, LocalDate endDate) {
@@ -27,10 +32,15 @@ public class HRDashboardService {
 
         Map<String, Object> dashboard = new HashMap<>();
 
-        // Get all departments
+        // Get all department names via departmentId
         List<String> departments = userRepository.findAll().stream()
-                .map(User::getDepartment)
-                .filter(dept -> dept != null && !dept.isEmpty())
+                .filter(user -> user.getDepartmentId() != null)
+                .map(User::getDepartmentId)
+                .distinct()
+                .map(departmentId -> departmentRepository.findById(departmentId)
+                        .map(Department::getName)
+                        .orElse(null))
+                .filter(deptName -> deptName != null && !deptName.isEmpty())
                 .distinct()
                 .collect(Collectors.toList());
 
@@ -39,7 +49,7 @@ public class HRDashboardService {
         for (String department : departments) {
             Map<String, Object> metrics = new HashMap<>();
             metrics.put("turnoverRate", calculateTurnoverRate(department, startDate, endDate));
-            metrics.put("trainingCompletionRate", calculateTrainingCompletionRate(department,startDate,endDate));
+            metrics.put("trainingCompletionRate", calculateTrainingCompletionRate(department, startDate, endDate));
             metrics.put("performanceMetrics", calculatePerformanceMetrics(department));
             departmentMetrics.put(department, metrics);
         }
@@ -53,7 +63,7 @@ public class HRDashboardService {
     }
     // Calculate turnover rate for a department
     private Double calculateTurnoverRate(String department, LocalDate startDate, LocalDate endDate) {
-        List<User> departmentUsers = userRepository.findByDepartment(department);
+        List<User> departmentUsers = userRepository.findByDepartmentId(department);
         if (departmentUsers.isEmpty()) {
             return 0.0;
         }
@@ -92,7 +102,7 @@ public class HRDashboardService {
 
     // Calculate training completion rate for a department
     private Double calculateTrainingCompletionRate(String department, LocalDate startDate, LocalDate endDate) {
-        List<User> departmentUsers = userRepository.findByDepartment(department);
+        List<User> departmentUsers = userRepository.findByDepartmentId(department);
         if (departmentUsers.isEmpty()) return 0.0;
 
         long totalTrainings = departmentUsers.stream()
@@ -138,7 +148,7 @@ public class HRDashboardService {
 
     // Calculate performance metrics for a department
     private Map<String, Double> calculatePerformanceMetrics(String department) {
-        List<User> departmentUsers = userRepository.findByDepartment(department);
+        List<User> departmentUsers = userRepository.findByDepartmentId(department);
         Map<String, Double> performanceMetrics = new HashMap<>();
 
         for (User user : departmentUsers) {

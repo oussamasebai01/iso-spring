@@ -1,5 +1,7 @@
 package com.example.coconsult.entities;
 
+import lombok.Getter;
+import lombok.Setter;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -8,6 +10,8 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
+@Getter
+@Setter
 @Document(collection = "users")
 public class User {
 
@@ -25,10 +29,11 @@ public class User {
 
     private String experience;
     private String password;
-    private String department; // e.g., IT, HR, Finance
+    private String departmentId; // Reference to Department's ID
     private String employmentStatus; // ACTIVE, TERMINATED
     private LocalDate hireDate;
     private LocalDate terminationDate;
+    private Salary salary; // Salary information
     private List<TrainingRecord> trainings = new ArrayList<>(); // Embedded training data
     private Double performanceScore; // Simple performance metric (0-100)
     private List<String> roles = new ArrayList<>();
@@ -37,7 +42,7 @@ public class User {
     public static class TrainingRecord {
         private String title;
         private String status; // PLANNED, IN_PROGRESS, COMPLETED
-            private LocalDate completionDate;
+        private LocalDate completionDate;
 
         public TrainingRecord() {}
 
@@ -49,10 +54,8 @@ public class User {
 
         public String getTitle() { return title; }
         public void setTitle(String title) { this.title = title; }
-
         public String getStatus() { return status; }
         public void setStatus(String status) { this.status = status; }
-
         public LocalDate getCompletionDate() { return completionDate; }
         public void setCompletionDate(LocalDate completionDate) { this.completionDate = completionDate; }
     }
@@ -61,7 +64,7 @@ public class User {
     public User() {}
 
     public User(String identifiant, String nom, String prenom, String email,
-                String experience, String password, String department,
+                String experience, String password, String departmentId,
                 String employmentStatus, LocalDate hireDate) {
         this.identifiant = identifiant;
         this.nom = nom;
@@ -69,7 +72,7 @@ public class User {
         this.email = email;
         this.experience = experience;
         this.password = password;
-        this.department = department;
+        this.departmentId = departmentId;
         this.employmentStatus = employmentStatus;
         this.hireDate = hireDate;
     }
@@ -96,8 +99,8 @@ public class User {
     public String getPassword() { return password; }
     public void setPassword(String password) { this.password = password; }
 
-    public String getDepartment() { return department; }
-    public void setDepartment(String department) { this.department = department; }
+    public String getDepartmentId() { return departmentId; }
+    public void setDepartmentId(String departmentId) { this.departmentId = departmentId; }
 
     public String getEmploymentStatus() { return employmentStatus; }
     public void setEmploymentStatus(String employmentStatus) { this.employmentStatus = employmentStatus; }
@@ -107,6 +110,9 @@ public class User {
 
     public LocalDate getTerminationDate() { return terminationDate; }
     public void setTerminationDate(LocalDate terminationDate) { this.terminationDate = terminationDate; }
+
+    public Salary getSalary() { return salary; }
+    public void setSalary(Salary salary) { this.salary = salary; }
 
     public List<TrainingRecord> getTrainings() { return trainings; }
     public void setTrainings(List<TrainingRecord> trainings) { this.trainings = trainings; }
@@ -141,7 +147,7 @@ public class User {
                 ", prenom='" + prenom + '\'' +
                 ", email='" + email + '\'' +
                 ", experience='" + experience + '\'' +
-                ", department='" + department + '\'' +
+                ", departmentId='" + departmentId + '\'' +
                 ", employmentStatus='" + employmentStatus + '\'' +
                 ", performanceScore=" + performanceScore +
                 '}';
